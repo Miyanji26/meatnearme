@@ -20,6 +20,9 @@ class PaymentsNotConfigured(RuntimeError):
 
 
 def is_configured() -> bool:
+    """Either credential style is enough to switch payments on."""
+    if config.PINELABS_API_KEY:
+        return True
     return bool(config.PINELABS_CLIENT_ID and config.PINELABS_CLIENT_SECRET)
 
 
@@ -33,6 +36,11 @@ def _expiry_epoch(response) -> float:
 
 
 def _access_token() -> str:
+    # An API key is already the bearer token - there is nothing to exchange and
+    # nothing to expire, so it skips the cache entirely.
+    if config.PINELABS_API_KEY:
+        return config.PINELABS_API_KEY
+
     global _token_cache
     with _lock:
         if _token_cache and time.time() < _token_cache["expires_at"] - 30:
@@ -56,7 +64,8 @@ def _access_token() -> str:
 def _client() -> PinelabsApi:
     if not is_configured():
         raise PaymentsNotConfigured(
-            "PINELABS_CLIENT_ID / PINELABS_CLIENT_SECRET are not set"
+            "Set PINELABS_API_KEY, or both PINELABS_CLIENT_ID and "
+            "PINELABS_CLIENT_SECRET"
         )
     return PinelabsApi(
         base_url=config.PINELABS_BASE_URL,

@@ -10,6 +10,12 @@ OPS_PASSWORD = os.getenv("OPS_PASSWORD", "ops123")
 AGENT_API_KEY = os.getenv("AGENT_API_KEY", "dev-agent-key")
 
 PINELABS_BASE_URL = os.getenv("PINELABS_BASE_URL", "https://pluraluat.v2.pinepg.in")
+
+# Two ways in, because Pine Labs issues both. An API key is the bearer token
+# directly; a client id/secret pair has to be exchanged for a short-lived token
+# first. The key wins when both are set - it is the simpler path, and it is what
+# a hackathon tenant hands out.
+PINELABS_API_KEY = os.getenv("PINELABS_API_KEY", "")
 PINELABS_CLIENT_ID = os.getenv("PINELABS_CLIENT_ID", "")
 PINELABS_CLIENT_SECRET = os.getenv("PINELABS_CLIENT_SECRET", "")
 

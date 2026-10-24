@@ -5,7 +5,9 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m scripts.init_db && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # Chained commands are rejected by the dashboard's start command field, so
+    # the init-then-serve sequence lives in start.sh.
+    startCommand: ./start.sh
     healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
@@ -22,6 +24,10 @@ services:
         sync: false
       - key: PINELABS_BASE_URL
         value: https://pluraluat.v2.pinepg.in
+      # Fill in PINELABS_API_KEY, or the client id/secret pair - not both. The
+      # key takes precedence. All three blank just leaves payments switched off.
+      - key: PINELABS_API_KEY
+        sync: false
       - key: PINELABS_CLIENT_ID
         sync: false
       - key: PINELABS_CLIENT_SECRET

@@ -85,8 +85,17 @@ storage. `qty` means grams for `unit="kg"` products and piece count for `unit="p
 
 ## Payments
 
-Pine Labs Plural via the `pinelabs-python` SDK. The OAuth2 client-credentials token is
-fetched once and cached until `expires_at`. Checkout calls `create_payment_link` with the
+Pine Labs Plural via the `pinelabs-python` SDK, authenticated either way round:
+
+- `PINELABS_API_KEY` is sent as the bearer token as-is — nothing to exchange, nothing to
+  expire.
+- `PINELABS_CLIENT_ID` + `PINELABS_CLIENT_SECRET` are exchanged for an OAuth2
+  client-credentials token, fetched once and cached until `expires_at`.
+
+The key wins if both are set. With neither, the app still runs — checkout just reports
+that payments are not switched on instead of failing at the gateway.
+
+Checkout calls `create_payment_link` with the
 amount **in paisa** and the order id as `merchant_payment_link_reference` — that field is
 the idempotency key, so a retried checkout returns the existing link rather than a second
 one. Re-issuing deliberately passes a fresh reference.
