@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set locality_action = "/" %}
+{% block title %}{{ APP_NAME }} — butchers near {{ locality }}{% endblock %}
+
+{% block content %}
+  <form class="search" method="get" action="/shops">
+    <span class="icon">🔍</span>
+    <input name="q" placeholder="Search chicken, mutton, fish or a shop">
+    <input type="hidden" name="locality" value="{{ locality }}">
+  </form>
+
+  <h1 class="lede">Fresh meat from <span>{{ locality }}</span>'s own butchers.</h1>
+  <p class="sub">{{ stores|length }} shop{{ '' if stores|length == 1 else 's' }} near you.
+     Pay online, they cut it fresh, it reaches your door.</p>
+
+  <h2>Shop by counter</h2>
+  <div class="tiles">
+    {% for category in categories %}
+      <a class="tile" href="/shops?locality={{ locality|urlencode }}&category={{ category.slug }}">
+        <img src="{{ category.photo }}" alt="{{ category.label }}" loading="lazy">
+        <span class="veil"></span>
+        <span class="txt">
+          <b>{{ category.label }}</b>
+          <small>{{ category.count }} cut{{ '' if category.count == 1 else 's' }} nearby</small>
+        </span>
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="row-head">
+    <h2>Shops near you</h2>
+    <a href="/shops?locality={{ locality|urlencode }}">See all →</a>
+  </div>
+
+  {% if stores %}
+    <div class="carousel">
+      {% for store in stores %}
+        {% include "_shop_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card empty">No shops listed in {{ locality }} yet.</div>
+  {% endif %}
+
+  <div class="card">
+    <h3>Why this exists</h3>
+    <p class="muted" style="margin:0">
+      Quick commerce made groceries instant, but fresh meat got left out. The freshest,
+      most trusted and lowest-priced supply sits with local butchers who can't take,
+      fulfil or collect payment for remote orders — so buyers had to choose between
+      convenience and price, freshness and trust. {{ APP_NAME }} removes that choice.
+    </p>
+  </div>
+{% endblock %}
+
+{% block kasai %}{% include "_kasai.html" %}{% endblock %}

@@ -1,0 +1,40 @@
+services:
+  # The service name becomes the hostname: meet-near-me.onrender.com
+  - type: web
+    name: meet-near-me
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m scripts.init_db && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: freshcut-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: AGENT_API_KEY
+        generateValue: true
+      - key: OPS_PASSWORD
+        sync: false
+      - key: PINELABS_BASE_URL
+        value: https://pluraluat.v2.pinepg.in
+      - key: PINELABS_CLIENT_ID
+        sync: false
+      - key: PINELABS_CLIENT_SECRET
+        sync: false
+      # Loads the three demo shops on the next deploy. Turn it off again once the
+      # real catalogue is in, or it will overwrite their prices every deploy.
+      - key: SEED_ON_START
+        value: "true"
+      # PUBLIC_BASE_URL is deliberately unset: the app falls back to Render's own
+      # RENDER_EXTERNAL_URL. Set it only for a custom domain.
+
+databases:
+  - name: freshcut-db
+    databaseName: freshcut
+    user: freshcut
+    plan: free

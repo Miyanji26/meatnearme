@@ -1,0 +1,94 @@
+<button class="kasai-fab" id="kasaiOpen" type="button">
+  <span class="spark">✦</span> kasai.ai
+</button>
+
+<div class="kasai-panel" id="kasaiPanel" role="dialog" aria-label="kasai.ai">
+  <div class="kasai-head">
+    <b>✦ kasai.ai</b>
+    <button class="x" id="kasaiClose" type="button" aria-label="Close">&times;</button>
+  </div>
+  <div class="kasai-body" id="kasaiBody">
+    <div class="msg bot">
+      Tell me what you need and I'll price it from a shop near you.<br>
+      Try <i>“1kg chicken curry cut and 2 dozen eggs”</i>.
+    </div>
+  </div>
+  <form class="kasai-foot" id="kasaiForm">
+    <input id="kasaiInput" autocomplete="off" placeholder="2kg mutton curry cut…">
+    <button type="submit">Ask</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  var panel = document.getElementById('kasaiPanel');
+  var body = document.getElementById('kasaiBody');
+  var input = document.getElementById('kasaiInput');
+
+  document.getElementById('kasaiOpen').onclick = function () {
+    panel.classList.add('open');
+    input.focus();
+  };
+  document.getElementById('kasaiClose').onclick = function () {
+    panel.classList.remove('open');
+  };
+
+  function bubble(cls, html) {
+    var el = document.createElement('div');
+    el.className = 'msg ' + cls;
+    el.innerHTML = html;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+    return el;
+  }
+
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  document.getElementById('kasaiForm').onsubmit = function (event) {
+    event.preventDefault();
+    var text = input.value.trim();
+    if (!text) { return; }
+
+    bubble('me', escapeHtml(text));
+    input.value = '';
+    var thinking = bubble('bot', 'Checking the counter…');
+
+    fetch('/kasai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var html = escapeHtml(data.reply || '');
+        if (data.items && data.items.length) {
+          html += '<div class="basket">';
+          data.items.forEach(function (item) {
+            html += '<div class="kv"><span>' + escapeHtml(item.name) + ' · ' +
+                    escapeHtml(item.qty) + '</span><span>' + escapeHtml(item.amount) + '</span></div>';
+          });
+          html += '<div class="kv total"><span>Total</span><span>' +
+                  escapeHtml(data.total) + '</span></div></div>';
+        }
+        if (data.unmatched && data.unmatched.length) {
+          html += '<div class="hint">Not on the list: ' +
+                  escapeHtml(data.unmatched.join(', ')) + '</div>';
+        }
+        if (data.can_add) {
+          html += '<form class="kasai-add" method="post" action="/kasai/add">' +
+                  '<input type="hidden" name="message" value="' + escapeHtml(text) + '">' +
+                  '<button type="submit">Add to cart</button></form>';
+        }
+        thinking.innerHTML = html;
+        body.scrollTop = body.scrollHeight;
+      })
+      .catch(function () {
+        thinking.textContent = 'kasai.ai is offline for a moment. Try again?';
+      });
+  };
+})();
+</script>

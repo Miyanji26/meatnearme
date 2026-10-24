@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% set locality_action = "/" %}
+{% block title %}Order {{ order.id }} — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <a class="crumb" href="/">← Home</a>
+
+  <div class="order-head">
+    <h1 style="margin:10px 0 0">Your order</h1>
+    <span class="code">{{ order.id }}</span>
+  </div>
+  <p class="sub">{{ order.store.name }} · {{ order.store.locality }}</p>
+
+  {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+
+  {% if order.status in ("new", "link_sent") %}
+    {% if order.payment_link %}
+      <div class="card flag">
+        <h3>{{ order.amount_paisa|rupees }} to pay</h3>
+        <p class="muted" style="margin:0">
+          Pay now and {{ order.store.name }} starts cutting. The price is fixed — it does
+          not change when they weigh.
+        </p>
+        <a class="btn pay" href="{{ order.payment_link }}">Pay {{ order.amount_paisa|rupees }} securely</a>
+        <div class="powered">🔒 Secure payment · we never see your card details</div>
+      </div>
+    {% else %}
+      <div class="card flag">
+        <h3>Payment link pending</h3>
+        <p class="muted" style="margin:0">
+          {% if payments_ready %}
+            We couldn't raise the link just now — your order is safe.
+          {% else %}
+            Online payment isn't configured on this deployment yet.
+          {% endif %}
+        </p>
+        {% if payments_ready %}
+          <form method="post" action="/order/{{ order.id }}/pay">
+            <button type="submit">Try the payment link again</button>
+          </form>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% elif order.status == "dispatched" %}
+    <div class="flash ok">Out for delivery — it's on its way to you.</div>
+  {% else %}
+    <div class="flash ok">Paid {{ order.amount_paisa|rupees }}. {{ order.store.name }} is on it.</div>
+  {% endif %}
+
+  <h2>Progress</h2>
+  <div class="card">
+    <ul class="steps">
+      {% set current = STATUS_FLOW.index(order.status) %}
+      {% for step in STATUS_FLOW %}
+        <li class="{% if loop.index0 < current %}done{% elif loop.index0 == current %}current{% endif %}">
+          {{ STATUS_LABELS[step] }}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if order.status != "dispatched" %}
+      <p class="hint">This page updates itself every 15 seconds.</p>
+    {% endif %}
+  </div>
+
+  <h2>What you ordered</h2>
+  <div class="card">
+    <table class="rows">
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.name }}
+              <span class="muted">· {{ item.qty_label() }}</span></td>
+            <td>{{ item.amount_paisa|rupees }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><td>Items</td><td>{{ order.items_paisa|rupees }}</td></tr>
+        <tr><td>Delivery</td>
+          <td>{% if order.delivery_fee_paisa %}{{ order.delivery_fee_paisa|rupees }}{% else %}FREE{% endif %}</td></tr>
+        <tr><td>{{ "Paid" if order.is_paid else "To pay" }}</td><td>{{ order.amount_paisa|rupees }}</td></tr>
+      </tfoot>
+    </table>
+    {% if order.notes %}<div class="quote">Note for the butcher: {{ order.notes }}</div>{% endif %}
+  </div>
+
+  {% if order.actual_weight_g %}
+    <h2>What the butcher cut</h2>
+    <div class="card">
+      <div class="kv"><span>You paid for</span><span>{{ order.expected_weight_g|kg }}</span></div>
+      <div class="kv"><span>Actually cut</span><span>{{ order.actual_weight_g|kg }}</span></div>
+      <div class="kv"><span>Worth</span><span>{{ order.actual_value_paisa|rupees }}</span></div>
+      <div class="kv"><span>You were charged</span><span>{{ order.amount_paisa|rupees }}</span></div>
+      {% if order.gap_ratio > 0.01 %}
+        <p class="hint gap-down">
+          {{ "%.0f"|format(order.gap_ratio * 100) }}% more meat than you paid for — no extra charge.</p>
+      {% elif order.gap_ratio < -0.01 %}
+        <p class="hint gap-up">
+          Cut {{ "%.0f"|format(-order.gap_ratio * 100) }}% light. Ops has been flagged.</p>
+      {% endif %}
+      {% if order.vendor_note %}<div class="quote">{{ order.vendor_note }}</div>{% endif %}
+    </div>
+  {% endif %}
+
+  <h2>Delivering to</h2>
+  <div class="card">
+    <div class="kv"><span>{{ order.customer_name }}</span><span>{{ order.phone }}</span></div>
+    <p class="muted" style="margin:6px 0 0">{{ order.address }}</p>
+  </div>
+
+  <a class="btn ghost" href="/store/{{ order.store_id }}">Order again from {{ order.store.name }}</a>
+{% endblock %}
+
+{% block tail %}
+  {% if order.status != "dispatched" %}
+    <script>setTimeout(function () { window.location.reload(); }, 15000);</script>
+  {% endif %}
+{% endblock %}

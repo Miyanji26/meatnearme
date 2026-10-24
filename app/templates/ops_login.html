@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Ops login — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <h1>Ops console</h1>
+  <div class="card">
+    {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+    <form method="post" action="/ops/login">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required autofocus>
+      <button type="submit">Log in</button>
+    </form>
+  </div>
+{% endblock %}

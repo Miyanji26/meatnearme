@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set locality_action = "/shops" %}
+{% block title %}Shops near {{ locality }} — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <a class="crumb" href="/">← Home</a>
+
+  <form class="search" method="get" action="/shops">
+    <span class="icon">🔍</span>
+    <input name="q" value="{{ q }}" placeholder="Search chicken, mutton, fish or a shop">
+    <input type="hidden" name="locality" value="{{ locality }}">
+    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+  </form>
+
+  <h1>Shops near you</h1>
+  <p class="sub">
+    {{ stores|length }} shop{{ '' if stores|length == 1 else 's' }} in {{ locality }}
+    {%- if category_label %} with {{ category_label|lower }}{% endif %}
+    {%- if q %} matching “{{ q }}”{% endif %}.
+  </p>
+
+  <div class="tabs">
+    <a class="tab {% if not category %}on{% endif %}"
+       href="/shops?locality={{ locality|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}">All</a>
+    {% for slug, label in categories %}
+      <a class="tab {% if category == slug %}on{% endif %}"
+         href="/shops?locality={{ locality|urlencode }}&category={{ slug }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  {% if stores %}
+    {% for store in stores %}
+      {% include "_shop_card.html" %}
+    {% endfor %}
+  {% else %}
+    <div class="card empty">
+      Nothing here yet.<br>
+      <a href="/shops?locality={{ locality|urlencode }}">Clear the filters</a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block kasai %}{% include "_kasai.html" %}{% endblock %}

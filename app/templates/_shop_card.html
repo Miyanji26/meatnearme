@@ -1,0 +1,28 @@
+<a class="shop {% if not store.is_open %}closed{% endif %}" href="/store/{{ store.id }}">
+  <span class="shot">
+    <img src="{{ store.photo_url }}" alt="{{ store.name }}" loading="lazy">
+    {% if store.is_open %}
+      <span class="badge">● Open{% if store.closes_at %} till {{ store.closes_at }}{% endif %}</span>
+    {% else %}
+      <span class="badge shut">● Closed{% if store.opens_at %} · opens {{ store.opens_at }}{% endif %}</span>
+    {% endif %}
+    {% if store.starting_price %}
+      <span class="from">from {{ store.starting_price[0]|rupees_short }}/{{ store.starting_price[1] }}</span>
+    {% endif %}
+  </span>
+  <span class="body">
+    <h3>{{ store.name }}</h3>
+    <span class="meta">
+      <span class="rating">{{ store.rating|stars }} {{ "%.1f"|format(store.rating) }}
+        <span class="n">({{ store.rating_count }})</span></span>
+      <span>·</span>
+      <span>{{ store.distance_km|distance }}</span>
+    </span>
+    <p class="where2">{{ store.locality }}{% if store.city %}, {{ store.city }}{% endif %}</p>
+    {% if store.service_list() %}
+      <span class="chips">
+        {% for service in store.service_list() %}<span class="chip">{{ service }}</span>{% endfor %}
+      </span>
+    {% endif %}
+  </span>
+</a>

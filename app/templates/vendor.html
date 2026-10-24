@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Vendor desk — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <h1>Vendor desk</h1>
+  <p class="sub">Paid orders only. Cut it, weigh it, log it — the customer has already been
+     charged the catalogue price, so the weight is the receipt, not the bill.</p>
+
+  {% if msg %}<div class="flash ok">{{ msg }}</div>{% endif %}
+  {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+
+  <h2>To cut ({{ to_cut|length }})</h2>
+  {% for order in to_cut %}
+    <div class="card">
+      <div class="order-head">
+        <span class="code">{{ order.id }}</span>
+        <span class="pill ok">Paid {{ order.amount_paisa|rupees }}</span>
+      </div>
+      <p class="muted" style="margin:0 0 8px">
+        {{ order.store.name }} · {{ order.created_at.strftime('%d %b, %I:%M %p') }}</p>
+
+      <table class="rows">
+        {% for item in order.items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.qty_label() }}</td>
+          </tr>
+        {% endfor %}
+        <tr><td>Expected total</td><td>{{ order.expected_weight_g|kg }}</td></tr>
+        <tr><td>Customer</td><td>{{ order.customer_name }} · {{ order.phone }}</td></tr>
+      </table>
+
+      {% if order.notes %}<div class="quote">Customer note: {{ order.notes }}</div>{% endif %}
+
+      <form method="post" action="/vendor/{{ order.id }}/weigh">
+        <label for="w-{{ order.id }}">Actual weight on the scale (kg)</label>
+        <div class="inline">
+          <div>
+            <input id="w-{{ order.id }}" name="actual_weight_kg" type="number" step="0.01" min="0.01"
+                   inputmode="decimal" required
+                   placeholder="{{ '%.2f'|format(order.expected_weight_g / 1000) }}">
+          </div>
+          <button type="submit">Log &amp; pack</button>
+        </div>
+        <label for="n-{{ order.id }}">Note (optional)</label>
+        <input id="n-{{ order.id }}" name="vendor_note" placeholder="e.g. only large pieces left today">
+      </form>
+    </div>
+  {% else %}
+    <div class="card"><div class="empty">Nothing paid and waiting to be cut.</div></div>
+  {% endfor %}
+
+  {% if incoming %}
+    <h2>Not paid yet ({{ incoming|length }})</h2>
+    <div class="card">
+      <table class="rows">
+        {% for order in incoming %}
+          <tr>
+            <td><span class="code">{{ order.id }}</span>
+              <div class="hint">{{ STATUS_LABELS.get(order.status, order.status) }}</div></td>
+            <td>{{ order.amount_paisa|rupees }}
+              <div class="hint">{{ order.created_at.strftime('%d %b, %I:%M %p') }}</div></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <p class="hint">Don't start cutting these — wait for payment to land.</p>
+    </div>
+  {% endif %}
+
+  {% if ready %}
+    <h2>Cut &amp; packed ({{ ready|length }})</h2>
+    <div class="card">
+      <table class="rows">
+        {% for order in ready %}
+          <tr>
+            <td><span class="code">{{ order.id }}</span>
+              <div class="hint">{{ order.actual_weight_g|kg }} cut</div></td>
+            <td>{{ order.amount_paisa|rupees }}
+              <div class="hint">waiting on dispatch</div></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

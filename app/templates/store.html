@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% set locality_action = "/" %}
+{% block title %}{{ store.name }} — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <a class="crumb" href="/shops?locality={{ store.locality|urlencode }}">← Shops in {{ store.locality }}</a>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="shop" style="margin:0;border:0;box-shadow:none">
+      <span class="shot" style="height:150px">
+        <img src="{{ store.photo_url }}" alt="{{ store.name }}">
+        {% if store.is_open %}
+          <span class="badge">● Open{% if store.closes_at %} till {{ store.closes_at }}{% endif %}</span>
+        {% else %}
+          <span class="badge shut">● Closed{% if store.opens_at %} · opens {{ store.opens_at }}{% endif %}</span>
+        {% endif %}
+      </span>
+      <span class="body">
+        <h3 style="font-size:19px">{{ store.name }}</h3>
+        {% if store.tagline %}<p class="muted" style="margin:0 0 6px">{{ store.tagline }}</p>{% endif %}
+        <span class="meta">
+          <span class="rating">{{ store.rating|stars }} {{ "%.1f"|format(store.rating) }}
+            <span class="n">({{ store.rating_count }})</span></span>
+          <span>·</span><span>{{ store.distance_km|distance }}</span>
+          {% if store.opens_at %}<span>·</span><span>{{ store.opens_at }}–{{ store.closes_at }}</span>{% endif %}
+        </span>
+        <p class="where2">{{ store.address }}</p>
+        {% if store.service_list() %}
+          <span class="chips">
+            {% for service in store.service_list() %}<span class="chip">{{ service }}</span>{% endfor %}
+          </span>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+
+  {% if msg %}<div class="flash ok">{{ msg }}</div>{% endif %}
+  {% if not store.is_open %}
+    <div class="flash bad">This shop is closed right now. You can browse, but orders open at {{ store.opens_at }}.</div>
+  {% endif %}
+
+  {% if tabs|length > 1 %}
+    <div class="tabs">
+      <a class="tab {% if not category %}on{% endif %}" href="/store/{{ store.id }}">All</a>
+      {% for slug, label in tabs %}
+        <a class="tab {% if category == slug %}on{% endif %}"
+           href="/store/{{ store.id }}?category={{ slug }}">{{ label }}</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% for slug, label in tabs %}
+    {% if not category or category == slug %}
+      <h2>{{ label }}</h2>
+      <div class="card">
+        {% for product in grouped[slug] %}
+          <div class="item">
+            <img src="{{ product.photo_url }}" alt="{{ product.name }}" loading="lazy">
+            <div class="info">
+              <h4>{{ product.name }}</h4>
+              {% if product.description %}<p class="desc">{{ product.description }}</p>{% endif %}
+              <div class="price">{{ product.price_paisa|rupees }}
+                <small>/ {{ product.unit }}</small></div>
+              <form method="post" action="/store/{{ store.id }}/add">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <select name="qty" aria-label="Quantity of {{ product.name }}">
+                  {% for option in qty_options(product, default_qty(product)) %}
+                    <option value="{{ option.qty }}" {% if option.selected %}selected{% endif %}>
+                      {{ option.label }} — {{ option.amount|rupees }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" {% if not store.is_open %}disabled{% endif %}>Add</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="card empty">This shop hasn't listed its counter yet.</div>
+  {% endfor %}
+{% endblock %}
+
+{% block tail %}
+  {% if cart_count %}
+    <div class="sticky">
+      <div class="wrap">
+        <div class="amt">
+          <b>{{ cart_total_paisa|rupees }}</b>
+          <small>{{ cart_count }} item{{ '' if cart_count == 1 else 's' }} in your basket</small>
+        </div>
+        <a class="btn" href="/cart">View cart →</a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block kasai %}{% include "_kasai.html" %}{% endblock %}

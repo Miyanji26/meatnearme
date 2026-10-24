@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.db
+.env
+.DS_Store
+
+# Local dev-server config; points at this machine's virtualenv.
+.claude/

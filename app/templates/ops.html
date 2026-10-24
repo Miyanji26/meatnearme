@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Ops console — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <h1>Ops console</h1>
+
+  {% if msg %}<div class="flash ok">{{ msg }}</div>{% endif %}
+  {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+  {% if not payments_ready %}
+    <div class="flash bad">Pine Labs credentials are not configured — no payment links can be raised.</div>
+  {% endif %}
+
+  <h2>Awaiting payment ({{ awaiting_payment|length }})</h2>
+  {% for order in awaiting_payment %}
+    <div class="card">
+      <div class="order-head">
+        <span class="code">{{ order.id }}</span>
+        <span class="pill {% if order.payment_link %}hot{% endif %}">
+          {{ STATUS_LABELS.get(order.status, order.status) }}</span>
+      </div>
+      <table class="rows">
+        <tr><td>{{ order.store.name }}</td><td>{{ order.amount_paisa|rupees }}</td></tr>
+        <tr><td>Customer</td><td>{{ order.customer_name }} · {{ order.phone }}</td></tr>
+        <tr><td>Raised</td><td>{{ order.created_at.strftime('%d %b, %I:%M %p') }}</td></tr>
+      </table>
+      {% if order.payment_link %}
+        <p class="hint"><a href="{{ order.payment_link }}">{{ order.payment_link_id }}</a></p>
+      {% endif %}
+      <form method="post" action="/ops/{{ order.id }}/retry_link">
+        <button type="submit" class="ghost">
+          {{ "Re-issue payment link" if order.payment_link else "Raise payment link" }}</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="card"><div class="empty">Nothing waiting on payment.</div></div>
+  {% endfor %}
+
+  <h2>Paid, with the butcher ({{ to_cut|length }})</h2>
+  <div class="card">
+    <table class="rows">
+      {% for order in to_cut %}
+        <tr>
+          <td><span class="code">{{ order.id }}</span>
+            <div class="hint">{{ order.store.name }} · {{ order.customer_name }}</div></td>
+          <td>{{ order.amount_paisa|rupees }}
+            <div class="hint">paid {{ order.paid_at.strftime('%d %b, %I:%M %p') if order.paid_at else '-' }}</div></td>
+        </tr>
+      {% else %}
+        <tr><td class="empty" colspan="2">Nothing being cut right now.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <h2>Ready to dispatch ({{ to_dispatch|length }})</h2>
+  {% for order in to_dispatch %}
+    {% set gap = order.gap_ratio %}
+    {% set flagged = gap|abs > threshold %}
+    <div class="card {% if flagged %}flag{% endif %}">
+      <div class="order-head">
+        <span class="code">{{ order.id }}</span>
+        {% if flagged %}
+          <span class="pill hot">{{ '%+.0f'|format(gap * 100) }}% vs paid</span>
+        {% else %}
+          <span class="pill ok">{{ '%+.0f'|format(gap * 100) }}%</span>
+        {% endif %}
+      </div>
+
+      <table class="rows">
+        <tr><td>Paid for</td><td>{{ order.expected_weight_g|kg }} · {{ order.items_paisa|rupees }}</td></tr>
+        <tr><td>Actually cut</td><td>{{ order.actual_weight_g|kg }} · {{ order.actual_value_paisa|rupees }}</td></tr>
+        <tr>
+          <td>Value drift</td>
+          <td class="{% if gap > 0 %}gap-down{% else %}gap-up{% endif %}">
+            {{ (order.actual_value_paisa - order.items_paisa)|rupees }}</td>
+        </tr>
+        <tr><td>Customer</td><td>{{ order.customer_name }} · {{ order.phone }}</td></tr>
+      </table>
+
+      {% if order.vendor_note %}<div class="quote">Vendor: {{ order.vendor_note }}</div>{% endif %}
+      <div class="quote">{{ order.address }}</div>
+
+      {% if flagged %}
+        <p class="hint" style="color:var(--accent)">
+          {% if gap < 0 %}
+            Short by more than {{ (threshold * 100)|int }}% — the customer paid for meat they
+            did not get. Call the shop before this leaves.
+          {% else %}
+            Over by more than {{ (threshold * 100)|int }}% — the shop is giving margin away.
+            Worth a call, not a block.
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <form method="post" action="/ops/{{ order.id }}/dispatch">
+        <button type="submit" class="secondary">Dispatch</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="card"><div class="empty">Nothing cut and waiting.</div></div>
+  {% endfor %}
+
+  <form method="post" action="/ops/logout">
+    <button type="submit" class="ghost">Log out</button>
+  </form>
+{% endblock %}

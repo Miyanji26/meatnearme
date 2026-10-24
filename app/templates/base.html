@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ APP_NAME }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css?v={{ asset_version() }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      {% if localities is defined %}
+        <form method="get" action="{{ locality_action|default('/') }}" class="place" id="placeform">
+          <span class="pin">📍</span>
+          <span class="where">
+            <span class="label">Delivering to</span>
+            {% if localities and localities|length > 1 %}
+              <select name="locality" onchange="document.getElementById('placeform').submit()">
+                {% for item in localities %}
+                  <option value="{{ item }}" {% if item == locality %}selected{% endif %}>{{ item }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              <span class="name">{{ locality }}, {{ city }}</span>
+            {% endif %}
+          </span>
+          {% if q is defined and q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+        </form>
+      {% else %}
+        <a href="/" class="brand"><span class="dot"></span>{{ APP_NAME }}</a>
+      {% endif %}
+
+      {% if cart_count is defined %}
+        <a href="/cart" class="cartlink" aria-label="Cart">🧺{% if cart_count %}<span class="count">{{ cart_count }}</span>{% endif %}</a>
+      {% else %}
+        <span><a href="/proof">Proof</a></span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% block content %}{% endblock %}
+    <footer>
+      {{ APP_NAME }} &middot; {{ APP_TAGLINE }}<br>
+      <a href="/proof">Proof</a> &middot; <a href="/vendor">Vendor</a> &middot; <a href="/ops">Ops</a>
+    </footer>
+  </div>
+
+  {% block tail %}{% endblock %}
+  {% block kasai %}{% endblock %}
+</body>
+</html>

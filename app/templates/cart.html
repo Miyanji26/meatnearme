@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% set locality_action = "/" %}
+{% block title %}Your cart — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  {% if summary.store %}
+    <a class="crumb" href="/store/{{ summary.store.id }}">← Back to {{ summary.store.name }}</a>
+  {% else %}
+    <a class="crumb" href="/">← Home</a>
+  {% endif %}
+
+  <h1>Your cart</h1>
+  {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+
+  {% if not summary.lines %}
+    <div class="card empty">
+      Your basket is empty.<br><br>
+      <a class="btn small ghost" href="/shops">Find a shop near you</a>
+    </div>
+  {% else %}
+
+  <p class="sub">From <b>{{ summary.store.name }}</b>, {{ summary.store.locality }}
+     · {{ summary.store.distance_km|distance }} away</p>
+
+  <h2>Cart details</h2>
+  <div class="card">
+    {% for line in summary.lines %}
+      <div class="item">
+        <img src="{{ line.product.photo_url }}" alt="{{ line.product.name }}" loading="lazy">
+        <div class="info">
+          <h4>{{ line.product.name }}</h4>
+          <p class="desc">{{ line.product.price_paisa|rupees }} / {{ line.product.unit }}</p>
+          <div class="price">{{ line.amount_paisa|rupees }}
+            <small>· {{ qty_label(line.product, line.qty) }}</small></div>
+          <div class="qtyrow">
+            <form method="post" action="/cart/update">
+              <input type="hidden" name="product_id" value="{{ line.product.id }}">
+              <select name="qty" onchange="this.form.submit()"
+                      aria-label="Quantity of {{ line.product.name }}">
+                {% for option in qty_options(line.product, line.qty) %}
+                  <option value="{{ option.qty }}" {% if option.selected %}selected{% endif %}>
+                    {{ option.label }}</option>
+                {% endfor %}
+              </select>
+              <noscript><button type="submit">Update</button></noscript>
+            </form>
+            <form method="post" action="/cart/update">
+              <input type="hidden" name="product_id" value="{{ line.product.id }}">
+              <input type="hidden" name="qty" value="0">
+              <button class="ghost" type="submit">Remove</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <h2>Bill summary</h2>
+  <div class="card">
+    <div class="kv"><span>Item total ({{ summary.lines|length }})</span>
+      <span>{{ summary.items_paisa|rupees }}</span></div>
+    <div class="kv"><span>Estimated weight</span>
+      <span>{{ summary.weight_g|kg }}</span></div>
+    <div class="kv"><span>Delivery fee</span>
+      {% if summary.delivery_fee_paisa %}
+        <span>{{ summary.delivery_fee_paisa|rupees }}</span>
+      {% else %}
+        <span class="free">FREE</span>
+      {% endif %}
+    </div>
+    <div class="kv"><span>Cutting &amp; cleaning</span><span class="free">Included</span></div>
+    <div class="kv total"><span>To pay</span><span>{{ summary.total_paisa|rupees }}</span></div>
+
+    {% if summary.free_delivery_gap_paisa %}
+      <p class="hint">Add {{ summary.free_delivery_gap_paisa|rupees }} more for free delivery.</p>
+    {% endif %}
+    <p class="hint">
+      This price is fixed. {{ summary.store.name }} cuts to this order and logs the exact
+      weight that went into your bag — you are never charged a rupee more.
+    </p>
+  </div>
+
+  <form method="post" action="/checkout" id="checkoutForm">
+    <h2>Delivery details</h2>
+    <div class="card">
+      <label for="customer_name">Name</label>
+      <input id="customer_name" name="customer_name" required maxlength="160"
+             value="{{ form.customer_name|default('') }}" placeholder="Your name">
+
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" required maxlength="32" inputmode="tel"
+             value="{{ form.phone|default('') }}" placeholder="10-digit mobile">
+
+      <label for="address">Delivery address</label>
+      <textarea id="address" name="address" required
+                placeholder="Flat, building, street, landmark">{{ form.address|default('') }}</textarea>
+
+      <label for="notes">Note for the butcher <span class="muted">(optional)</span></label>
+      <textarea id="notes" name="notes" style="min-height:56px"
+                placeholder="Small pieces, less fat, skin off…">{{ form.notes|default('') }}</textarea>
+    </div>
+
+    <h2>Payment options</h2>
+    <div class="card">
+      <div class="pay-opts">
+        {% for code, label, note in methods %}
+          <label class="opt">
+            <input type="radio" name="payment_method" value="{{ code }}"
+                   {% if loop.first %}checked{% endif %}>
+            <span>
+              <span class="name">{{ label }}</span>
+              <span class="note">{{ note }}</span>
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+      <div class="powered">🔒 Secure payments · we never see your card details</div>
+      {% if not payments_ready %}
+        <div class="flash bad" style="margin-bottom:0">
+          Payments are not switched on for this deployment yet, so the payment link
+          cannot be raised. Your order will still be recorded.
+        </div>
+      {% endif %}
+    </div>
+
+    <p class="hint" style="text-align:center">
+      By paying you agree that {{ summary.store.name }} will cut and pack this order today.
+    </p>
+  </form>
+  {% endif %}
+{% endblock %}
+
+{% block tail %}
+  {% if summary.lines %}
+    <div class="sticky">
+      <div class="wrap">
+        <div class="amt">
+          <b>{{ summary.total_paisa|rupees }}</b>
+          <small>incl. delivery · fixed price</small>
+        </div>
+        <button class="btn pay" type="submit" form="checkoutForm">Pay securely</button>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

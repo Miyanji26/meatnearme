@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% set locality_action = "/" %}
+{% block title %}Proof — {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+  <a class="crumb" href="/">← Home</a>
+
+  <h1>Live proof</h1>
+  <p class="sub">
+    Every order that has gone through {{ APP_NAME }}, in the open. Names are reduced to
+    an initial — the point is the trail, not the people.
+  </p>
+
+  <div class="card">
+    <div class="kv total"><span>Orders paid</span><span>{{ paid_count }}</span></div>
+    <div class="kv"><span>Delivered</span><span>{{ dispatched_count }}</span></div>
+    <div class="kv"><span>Total orders</span><span>{{ orders|length }}</span></div>
+  </div>
+
+  <div class="card">
+    <table class="rows">
+      {% for order in orders %}
+        <tr>
+          <td>
+            {{ order.masked_name() }}
+            <div class="hint">{{ order.store.name }}</div>
+            <div class="hint">{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+          </td>
+          <td>
+            <span class="pill {% if order.status in ['paid','weighed','dispatched'] %}ok{% elif order.status == 'link_sent' %}hot{% endif %}">
+              {{ STATUS_LABELS.get(order.status, order.status) }}
+            </span>
+            <div class="hint">updated {{ order.updated_at.strftime('%d %b, %I:%M %p') }}</div>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td class="empty" colspan="2">No orders yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
