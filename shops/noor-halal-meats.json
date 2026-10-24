@@ -1,0 +1,66 @@
+{
+  "store": {
+    "name": "Noor Halal Meats",
+    "tagline": "Chicken counter in front, mutton block behind.",
+    "photo_url": "https://images.unsplash.com/photo-1613454320437-0c228c8b1723?auto=format&fit=crop&w=800&q=70",
+    "phone": "+91 98451 77902",
+    "address": "58, Dispensary Road, Shivajinagar, Bengaluru 560001",
+    "locality": "Shivajinagar",
+    "city": "Bengaluru",
+    "distance_km": 2.4,
+    "rating": 4.1,
+    "rating_count": 489,
+    "services": "Halal, Curry cut, Mince on request, Bulk orders",
+    "opens_at": "07:30",
+    "closes_at": "22:00",
+    "is_open": false
+  },
+  "products": [
+    {
+      "name": "Chicken Curry Cut",
+      "aliases": "chicken,chicken curry,broiler",
+      "category": "chicken",
+      "description": "Skin on, cut medium.",
+      "photo_url": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 229.0
+    },
+    {
+      "name": "Chicken Keema",
+      "aliases": "chicken keema,chicken mince",
+      "category": "chicken",
+      "description": "Minced to order.",
+      "photo_url": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 310.0
+    },
+    {
+      "name": "Mutton Curry Cut",
+      "aliases": "mutton,goat,mutton curry",
+      "category": "mutton",
+      "description": "On the bone.",
+      "photo_url": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 805.0
+    },
+    {
+      "name": "Beef Boneless",
+      "aliases": "beef,beef boneless",
+      "category": "mutton",
+      "description": "Trimmed, cubed for slow cooking.",
+      "photo_url": "https://images.unsplash.com/photo-1613454320437-0c228c8b1723?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 420.0
+    },
+    {
+      "name": "Country Eggs",
+      "aliases": "country egg,naati egg,country eggs",
+      "category": "eggs",
+      "description": "Naati eggs, brown shell.",
+      "photo_url": "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=800&q=70",
+      "unit": "piece",
+      "price_rupees": 14.0,
+      "typical_weight_g": 48
+    }
+  ]
+}

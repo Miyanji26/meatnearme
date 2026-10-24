@@ -1,6 +1,7 @@
 """Put one real shop and its price list into the catalogue.
 
     python -m scripts.onboard shops/example.json
+    python -m scripts.onboard shops/*.json
 
 Separate from scripts.seed on purpose. The seed owns the three demo shops and
 rewrites them on every run; a real butcher's prices must not be in a file that
@@ -152,9 +153,16 @@ def apply(data: dict) -> None:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
+    paths = [Path(arg) for arg in sys.argv[1:]]
+    if not paths:
         raise SystemExit(__doc__)
-    apply(load(Path(sys.argv[1])))
+
+    # Read and check every file before writing any of them. Onboarding a row of
+    # shops and discovering a typo in the last one would otherwise leave half a
+    # locality live and half missing.
+    loaded = [load(path) for path in paths]
+    for data in loaded:
+        apply(data)
 
 
 if __name__ == "__main__":

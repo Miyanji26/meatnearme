@@ -1,0 +1,65 @@
+{
+  "store": {
+    "name": "Shivaji Mutton Stall",
+    "tagline": "Local goat, broken down the same day.",
+    "photo_url": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=800&q=70",
+    "phone": "+91 99016 23380",
+    "address": "4, Meenakshi Koil Street, Shivajinagar, Bengaluru 560001",
+    "locality": "Shivajinagar",
+    "city": "Bengaluru",
+    "distance_km": 1.2,
+    "rating": 4.4,
+    "rating_count": 356,
+    "services": "Halal, Bone-in cuts, Mince on request, Home delivery",
+    "opens_at": "06:00",
+    "closes_at": "20:00",
+    "is_open": true
+  },
+  "products": [
+    {
+      "name": "Mutton Curry Cut",
+      "aliases": "mutton,goat,bakra,mutton curry",
+      "category": "mutton",
+      "description": "On the bone, medium pieces.",
+      "photo_url": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 820.0
+    },
+    {
+      "name": "Mutton Boneless",
+      "aliases": "mutton boneless,boneless mutton",
+      "category": "mutton",
+      "description": "Leg meat, trimmed and cubed.",
+      "photo_url": "https://images.unsplash.com/photo-1613454320437-0c228c8b1723?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 980.0
+    },
+    {
+      "name": "Mutton Chops",
+      "aliases": "chops,mutton chops,rib chops",
+      "category": "mutton",
+      "description": "Rib chops, French-trimmed.",
+      "photo_url": "https://images.unsplash.com/photo-1588347818036-558601350947?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 940.0
+    },
+    {
+      "name": "Mutton Keema",
+      "aliases": "keema,mince,mutton mince",
+      "category": "mutton",
+      "description": "Coarse mince, minced to order.",
+      "photo_url": "https://images.unsplash.com/photo-1613454320437-0c228c8b1723?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 890.0
+    },
+    {
+      "name": "Mutton Liver",
+      "aliases": "liver,kaleji,mutton liver",
+      "category": "mutton",
+      "description": "Whole lobes, cleaned.",
+      "photo_url": "https://images.unsplash.com/photo-1613454320437-0c228c8b1723?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 420.0
+    }
+  ]
+}

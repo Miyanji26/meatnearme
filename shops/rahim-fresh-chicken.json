@@ -1,0 +1,66 @@
+{
+  "store": {
+    "name": "Rahim Fresh Chicken",
+    "tagline": "Cut to order, every morning since 1998.",
+    "photo_url": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=70",
+    "phone": "+91 98860 44107",
+    "address": "12, Ebrahim Sahib Street, Shivajinagar, Bengaluru 560001",
+    "locality": "Shivajinagar",
+    "city": "Bengaluru",
+    "distance_km": 0.4,
+    "rating": 4.6,
+    "rating_count": 112,
+    "services": "Halal, Cut to order, Skin removed, Home delivery",
+    "opens_at": "07:00",
+    "closes_at": "21:00",
+    "is_open": true
+  },
+  "products": [
+    {
+      "name": "Chicken Curry Cut",
+      "aliases": "chicken,chicken curry,broiler,curry cut",
+      "category": "chicken",
+      "description": "Skin off, 12-14 medium pieces.",
+      "photo_url": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 239.0
+    },
+    {
+      "name": "Chicken Boneless",
+      "aliases": "boneless,chicken boneless,boneless chicken",
+      "category": "chicken",
+      "description": "Thigh boneless, cubed.",
+      "photo_url": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 349.0
+    },
+    {
+      "name": "Chicken Leg Pieces",
+      "aliases": "leg piece,leg pieces,drumstick,chicken leg",
+      "category": "chicken",
+      "description": "Thigh and drumstick, skin on.",
+      "photo_url": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 259.0
+    },
+    {
+      "name": "Whole Chicken",
+      "aliases": "whole chicken,full chicken,whole bird",
+      "category": "chicken",
+      "description": "Dressed whole, uncut.",
+      "photo_url": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 219.0
+    },
+    {
+      "name": "Farm Eggs",
+      "aliases": "egg,eggs,anda",
+      "category": "eggs",
+      "description": "Tray-fresh table eggs.",
+      "photo_url": "https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?auto=format&fit=crop&w=800&q=70",
+      "unit": "piece",
+      "price_rupees": 9.0,
+      "typical_weight_g": 55
+    }
+  ]
+}

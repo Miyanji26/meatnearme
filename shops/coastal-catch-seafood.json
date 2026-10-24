@@ -1,0 +1,65 @@
+{
+  "store": {
+    "name": "Coastal Catch Seafood",
+    "tagline": "Mangalore boats in by six, counter open by eight.",
+    "photo_url": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?auto=format&fit=crop&w=800&q=70",
+    "phone": "+91 97400 81265",
+    "address": "22, Commercial Street Cross, Shivajinagar, Bengaluru 560001",
+    "locality": "Shivajinagar",
+    "city": "Bengaluru",
+    "distance_km": 1.9,
+    "rating": 4.3,
+    "rating_count": 204,
+    "services": "Cleaning included, Gutted and scaled, Ice packed, Home delivery",
+    "opens_at": "08:00",
+    "closes_at": "19:30",
+    "is_open": true
+  },
+  "products": [
+    {
+      "name": "Seer Fish (Surmai)",
+      "aliases": "surmai,seer,seer fish,anjal",
+      "category": "fish",
+      "description": "Thick steaks from whole fish.",
+      "photo_url": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 780.0
+    },
+    {
+      "name": "Pomfret",
+      "aliases": "pomfret,paplet,white pomfret",
+      "category": "fish",
+      "description": "Whole silver pomfret, gutted.",
+      "photo_url": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 690.0
+    },
+    {
+      "name": "Prawns (Medium)",
+      "aliases": "prawns,jhinga,shrimp,medium prawns",
+      "category": "fish",
+      "description": "Deveined, shell on.",
+      "photo_url": "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 540.0
+    },
+    {
+      "name": "Indian Mackerel (Bangude)",
+      "aliases": "bangude,mackerel,bangda",
+      "category": "fish",
+      "description": "Whole, cleaned.",
+      "photo_url": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 320.0
+    },
+    {
+      "name": "Rohu",
+      "aliases": "rohu,rou,carp",
+      "category": "fish",
+      "description": "Freshwater carp, cut to steaks.",
+      "photo_url": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?auto=format&fit=crop&w=800&q=70",
+      "unit": "kg",
+      "price_rupees": 280.0
+    }
+  ]
+}
