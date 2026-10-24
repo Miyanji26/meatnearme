@@ -10,6 +10,10 @@ services:
     startCommand: ./start.sh
     healthCheckPath: /healthz
     envVars:
+      # Also pinned in .python-version, because an env var set here is lost if
+      # the blueprint is ever edited by hand. SQLAlchemy 2.0.36 cannot import on
+      # 3.14 - Union.__getitem__ stopped accepting a tuple - so letting Render
+      # pick its own default breaks the build outright.
       - key: PYTHON_VERSION
         value: "3.11.9"
       - key: DATABASE_URL
